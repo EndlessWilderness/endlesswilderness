@@ -1,0 +1,13 @@
+apply plugin: 'eclipse'
+apply plugin: 'groovy'
+apply plugin: 'application'
+
+mainClassName = 'com.jdydev.ew.client.EWClient'
+
+repositories { mavenCentral() }
+
+task wrapper(type: Wrapper) { gradleVersion = '1.12' }
+
+dependencies {
+	compile fileTree(dir: "${System.env.APPDATA}/.jmonkeyplatform/3.0/libs", include: '*.jar')
+}

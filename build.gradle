@@ -2,6 +2,8 @@ apply plugin: 'eclipse'
 apply plugin: 'groovy'
 apply plugin: 'application'
 
+version = '0.0.0'
+
 mainClassName = 'com.jdydev.ew.client.EWClient'
 
 repositories { mavenCentral() }

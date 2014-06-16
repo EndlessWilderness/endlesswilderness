@@ -2,7 +2,7 @@ apply plugin: 'eclipse'
 apply plugin: 'groovy'
 apply plugin: 'application'
 
-version = '0.0.0'
+version = '0.0.1'
 
 mainClassName = 'com.jdydev.ew.client.EWClient'
 

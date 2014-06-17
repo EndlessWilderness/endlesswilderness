@@ -1,0 +1,29 @@
+= Endless Wilderness
+
+== Introduction
+ 
+== Requirements
+
+* Java 1.7
+* JAVA\_HOME Environment Variable Set
+* Java on the path
+
+== Building
+
+* Must install jMonkeyEngine3
+** http://hub.jmonkeyengine.org/downloads/
+
+=== Cygwin
+
+[source,bash]
+----
+chmod 755 ./gradlew
+./gradlew build run
+----
+
+=== Windows CMD
+
+[source]
+----
+gradlew build run
+----

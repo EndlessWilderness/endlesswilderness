@@ -11,5 +11,5 @@ repositories { mavenCentral() }
 task wrapper(type: Wrapper) { gradleVersion = '1.12' }
 
 dependencies {
-	compile fileTree(dir: "${System.env.APPDATA}/.jmonkeyplatform/3.0/libs", include: '*.jar')
+    compile fileTree(dir: "${System.env.APPDATA}/.jmonkeyplatform/3.0/libs", include: '*.jar')
 }

@@ -6,10 +6,15 @@ version = '0.0.1'
 
 mainClassName = 'com.jdydev.ew.client.EWClient'
 
-repositories { mavenCentral() }
+repositories { jcenter() }
 
 task wrapper(type: Wrapper) { gradleVersion = '1.12' }
 
 dependencies {
-    compile fileTree(dir: "${System.env.APPDATA}/.jmonkeyplatform/3.0/libs", include: '*.jar')
+    compile fileTree(dir: "${System.getProperty('user.home')}/git/jmonkeyengine", include: '*/build/libs/*.jar')
+    // Need to come up with a solution to the natives. 
+    compile fileTree(dir: "${System.env.APPDATA}/.jmonkeyplatform/3.0/libs", include: 'jME3-lwjgl-natives.jar')
+    compile fileTree(dir: "${System.env.APPDATA}/.jmonkeyplatform/3.0/libs", include: 'jme3-bullet-*-SNAPSHOT-natives.jar')
+    compile 'org.lwjgl.lwjgl:lwjgl:2.9.1'
+    compile 'de.jarnbjo:j-ogg-all:1.0.0'
 }

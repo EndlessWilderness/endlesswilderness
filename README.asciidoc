@@ -1,7 +1,13 @@
 = Endless Wilderness
 
 == Introduction
- 
+
+Endless Wilderness is most likely a foolish endeavor by myself and a group of developers that I've strung along to help and encourage me.  The game, should it ever come to pass, will be an MMORPG where the central purpose is to create, expand, and defend civilization against the marauding hordes of beasts, demons, and other races.  You (the players) are the only humans left on this world, and you can only rely on each other to survive.  You have no allies, no friendly civilizations, not even generally neutral people that could be of use.  The best you can hope for is that a certain race or group hasn't noticed you, or you are beneath them sufficiently to not be a threat.
+
+The economy of the world will be completely player driven.  There are no NPCs to give you quests, money, or stuff.  Everything in the world that will bedirectly usable by you will be crafted by you or your fellow players.   There will be raw materials to discover in the world, which can be used to craft usable goods, but there will not be usable drops from your vanquished foes.
+
+We are going to be releasing a playable (but ugly and nearly featureless) version of the game as quickly as possible to begin getting feedback from interested players.  As soon as we get server infrastructure up and running, we'll make account creation possible and let you try things out.
+
 == Requirements
 
 * Java 1.7
@@ -10,8 +16,8 @@
 
 == Building
 
-* Must install jMonkeyEngine3
-** http://hub.jmonkeyengine.org/downloads/
+Uses jMonkeyEngine3
+Jars now available on http://oss.jfrog.org/artifactory/libs-snapshot/com/jdydev/jme3/[OJO] 
 
 === Cygwin
 

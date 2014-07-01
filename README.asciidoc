@@ -33,3 +33,7 @@ chmod 755 ./gradlew
 ----
 gradlew build run
 ----
+
+== Distribution
+
+We hope to make a distribution available for download soon.

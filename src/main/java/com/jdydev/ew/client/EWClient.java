@@ -2,9 +2,8 @@ package com.jdydev.ew.client;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.KeyInput;
@@ -30,7 +29,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     // private Spatial sceneModel;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
-    private CharacterControl player;
+    private BetterCharacterControl player;
     private Vector3f walkDirection = new Vector3f();
     private boolean autoWalk = false;
     private boolean left = false, right = false, up = false, down = false;
@@ -125,6 +124,11 @@ public class EWClient extends SimpleApplication implements ActionListener {
         dl.setColor(ColorRGBA.White);
         dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
         rootNode.addLight(dl);
+
+        DirectionalLight dl2 = new DirectionalLight();
+        dl2.setColor(ColorRGBA.White);
+        dl2.setDirection(new Vector3f(-2.8f, 2.8f, 2.8f).normalizeLocal());
+        rootNode.addLight(dl2);
     }
 
     /**
@@ -194,7 +198,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
             walkDirection.addLocal(camDir.negate());
         }
         player.setWalkDirection(walkDirection);
-        cam.setLocation(player.getPhysicsLocation());
+        player.update(tpf);
     }
 
     private void setupBullet(Node scene) {
@@ -224,12 +228,17 @@ public class EWClient extends SimpleApplication implements ActionListener {
         // The CharacterControl offers extra settings for
         // size, stepheight, jumping, falling, and gravity.
         // We also put the player in its starting position.
-        CapsuleCollisionShape capsuleShape = new CapsuleCollisionShape(1.5f, 6f, 1);
-        player = new CharacterControl(capsuleShape, 0.05f);
-        player.setJumpSpeed(20);
-        player.setFallSpeed(50);
-        player.setGravity(50);
-        player.setPhysicsLocation(new Vector3f(250, -65, 0));
+
+        Node ninja = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
+        ninja.scale(0.05f, 0.05f, 0.05f);
+        ninja.rotate(0.0f, 0.0f, 0.0f);
+        Vector3f loc = new Vector3f(250, -68, 10);
+        ninja.setLocalTranslation(loc);
+        cam.setLocation(loc);
+        
+        rootNode.attachChild(ninja);
+        player = new BetterCharacterControl(0.3f, 2.5f, 8f);
+        ninja.addControl(player);
 
         // We attach the scene and the player to the rootnode and the physics space,
         // to make them appear in the game world.

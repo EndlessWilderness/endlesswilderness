@@ -182,8 +182,8 @@ public class EWClient extends SimpleApplication implements ActionListener {
      */
     @Override
     public void simpleUpdate(float tpf) {
-        camDir.set(cam.getDirection()).multLocal(0.6f);
-        camLeft.set(cam.getLeft()).multLocal(0.4f);
+        camDir.set(cam.getDirection()).multLocal(20.0f);
+        camLeft.set(cam.getLeft()).multLocal(15.0f);
         walkDirection.set(0, 0, 0);
         if (left) {
             walkDirection.addLocal(camLeft);
@@ -197,19 +197,21 @@ public class EWClient extends SimpleApplication implements ActionListener {
         if (down) {
             walkDirection.addLocal(camDir.negate());
         }
+        walkDirection.multLocal(1.0f, 0, 1.0f);
         player.setWalkDirection(walkDirection);
-        player.update(tpf);
+        player.setViewDirection(camDir.negate());
     }
 
     private void setupBullet(Node scene) {
         /** Set up Physics */
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        // bulletAppState.getPhysicsSpace().enableDebug(assetManager);
+        // Toggle to true to see grids
+        bulletAppState.setDebugEnabled(false);
 
         // We re-use the flyby camera for rotation, while positioning is handled by physics
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
-        flyCam.setMoveSpeed(100);
+        flyCam.setMoveSpeed(20);
         flyCam.setDragToRotate(true);
         // this is a hack to toggle inverted mouse, because it's not directly a function on the
         // flyCam.
@@ -234,10 +236,10 @@ public class EWClient extends SimpleApplication implements ActionListener {
         ninja.rotate(0.0f, 0.0f, 0.0f);
         Vector3f loc = new Vector3f(250, -68, 10);
         ninja.setLocalTranslation(loc);
-        cam.setLocation(loc);
-        
+        cam.setLocation(loc.add(0, 0, 20));
+
         rootNode.attachChild(ninja);
-        player = new BetterCharacterControl(0.3f, 2.5f, 8f);
+        player = new BetterCharacterControl(1.3f, 10.0f, 8f);
         ninja.addControl(player);
 
         // We attach the scene and the player to the rootnode and the physics space,

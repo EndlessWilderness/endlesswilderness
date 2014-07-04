@@ -26,7 +26,8 @@ import com.jme3.texture.Texture.WrapMode;
 
 public class EWClient extends SimpleApplication implements ActionListener {
 
-    public static final int MOVE_SPEED = 40;
+    public static final float SCALE = 0.10f;
+    public static final float MOVE_SPEED = 300.0f;
     // private Spatial sceneModel;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
@@ -106,8 +107,8 @@ public class EWClient extends SimpleApplication implements ActionListener {
          * 4. We give the terrain its material, position & scale it, and attach it.
          */
         terrain.setMaterial(mat_terrain);
-        terrain.setLocalTranslation(0, -100, 0);
-        terrain.setLocalScale(2f, 1f, 2f);
+//        terrain.setLocalTranslation(0, -100, 0);
+        terrain.setLocalScale(2f, 0.5f, 2f);
 
         /** 5. The LOD (level of detail) depends on were the camera is: */
         TerrainLodControl control = new TerrainLodControl(terrain, getCamera());
@@ -184,8 +185,8 @@ public class EWClient extends SimpleApplication implements ActionListener {
      */
     @Override
     public void simpleUpdate(float tpf) {
-        camDir.set(cam.getDirection()).multLocal(MOVE_SPEED);
-        camLeft.set(cam.getLeft()).multLocal(MOVE_SPEED * 0.5f);
+        camDir.set(cam.getDirection()).multLocal(SCALE * MOVE_SPEED);
+        camLeft.set(cam.getLeft()).multLocal(SCALE * MOVE_SPEED * 0.5f);
         walkDirection.set(0, 0, 0);
         if (left) {
             walkDirection.addLocal(camLeft);
@@ -200,9 +201,10 @@ public class EWClient extends SimpleApplication implements ActionListener {
             walkDirection.addLocal(camDir.negate());
         }
         walkDirection.multLocal(1.0f, 0, 1.0f);
+        walkDirection.addLocal(0, -1, 0);
         player.setWalkDirection(walkDirection);
         player.setViewDirection(camDir.negate());
-        cam.setLocation(ninja.getLocalTranslation().addLocal(0, 10, 20));
+        cam.setLocation(ninja.getLocalTranslation().addLocal(camDir.negate()));
     }
 
     private void setupBullet(Node scene) {
@@ -234,15 +236,18 @@ public class EWClient extends SimpleApplication implements ActionListener {
         // size, stepheight, jumping, falling, and gravity.
         // We also put the player in its starting position.
 
-        ninja = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
-        ninja.scale(0.05f, 0.05f, 0.05f);
-        ninja.rotate(0.0f, 0.0f, 0.0f);
-        Vector3f loc = new Vector3f(250, -68, 10);
+        ninja = new Node();
+        Node model = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
+        model.scale(SCALE * 0.5f, SCALE * 0.5f, SCALE * 0.5f);
+        model.rotate(0.0f, 0.0f, 0.0f);
+        Vector3f loc = new Vector3f(125, 32, 5);
+        ninja.attachChild(model);
         ninja.setLocalTranslation(loc);
-        cam.setLocation(loc.add(0, 0, 20));
+        model.setLocalTranslation(0, -0.075f, 0);
+        
 
         rootNode.attachChild(ninja);
-        player = new BetterCharacterControl(1.3f, 10.0f, 8f);
+        player = new BetterCharacterControl(SCALE * 13.0f, SCALE * 100.0f, SCALE * 80000.0f);
         ninja.addControl(player);
 
         // We attach the scene and the player to the rootnode and the physics space,
@@ -250,5 +255,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         rootNode.attachChild(scene);
         bulletAppState.getPhysicsSpace().add(landscape);
         bulletAppState.getPhysicsSpace().add(player);
+        player.setGravity(new Vector3f(0, -10, 0));
+        player.setJumpForce(new Vector3f(0, 15, 0));
     }
 }

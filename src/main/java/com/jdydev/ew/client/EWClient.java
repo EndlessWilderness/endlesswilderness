@@ -26,10 +26,12 @@ import com.jme3.texture.Texture.WrapMode;
 
 public class EWClient extends SimpleApplication implements ActionListener {
 
+    public static final int MOVE_SPEED = 40;
     // private Spatial sceneModel;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
     private BetterCharacterControl player;
+    private Node ninja;
     private Vector3f walkDirection = new Vector3f();
     private boolean autoWalk = false;
     private boolean left = false, right = false, up = false, down = false;
@@ -182,8 +184,8 @@ public class EWClient extends SimpleApplication implements ActionListener {
      */
     @Override
     public void simpleUpdate(float tpf) {
-        camDir.set(cam.getDirection()).multLocal(20.0f);
-        camLeft.set(cam.getLeft()).multLocal(15.0f);
+        camDir.set(cam.getDirection()).multLocal(MOVE_SPEED);
+        camLeft.set(cam.getLeft()).multLocal(MOVE_SPEED * 0.5f);
         walkDirection.set(0, 0, 0);
         if (left) {
             walkDirection.addLocal(camLeft);
@@ -200,6 +202,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         walkDirection.multLocal(1.0f, 0, 1.0f);
         player.setWalkDirection(walkDirection);
         player.setViewDirection(camDir.negate());
+        cam.setLocation(ninja.getLocalTranslation().addLocal(0, 10, 20));
     }
 
     private void setupBullet(Node scene) {
@@ -211,7 +214,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
 
         // We re-use the flyby camera for rotation, while positioning is handled by physics
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
-        flyCam.setMoveSpeed(20);
+        flyCam.setMoveSpeed(MOVE_SPEED);
         flyCam.setDragToRotate(true);
         // this is a hack to toggle inverted mouse, because it's not directly a function on the
         // flyCam.
@@ -231,7 +234,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         // size, stepheight, jumping, falling, and gravity.
         // We also put the player in its starting position.
 
-        Node ninja = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
+        ninja = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
         ninja.scale(0.05f, 0.05f, 0.05f);
         ninja.rotate(0.0f, 0.0f, 0.0f);
         Vector3f loc = new Vector3f(250, -68, 10);

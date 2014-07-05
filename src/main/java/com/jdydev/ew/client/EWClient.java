@@ -107,8 +107,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
          * 4. We give the terrain its material, position & scale it, and attach it.
          */
         terrain.setMaterial(mat_terrain);
-//        terrain.setLocalTranslation(0, -100, 0);
-        terrain.setLocalScale(2f, 0.5f, 2f);
+        terrain.setLocalScale(5f, 0.5f, 5f);
 
         /** 5. The LOD (level of detail) depends on were the camera is: */
         TerrainLodControl control = new TerrainLodControl(terrain, getCamera());
@@ -200,8 +199,10 @@ public class EWClient extends SimpleApplication implements ActionListener {
         if (down) {
             walkDirection.addLocal(camDir.negate());
         }
-        walkDirection.multLocal(1.0f, 0, 1.0f);
-        walkDirection.addLocal(0, -1, 0);
+        if (!player.isOnGround()) {
+            walkDirection.multLocal(0.75f, 0.0f, 0.75f);
+            walkDirection.addLocal(0.0f, -10.0f, 0.0f);
+        }
         player.setWalkDirection(walkDirection);
         player.setViewDirection(camDir.negate());
         cam.setLocation(ninja.getLocalTranslation().addLocal(camDir.negate()));
@@ -211,8 +212,6 @@ public class EWClient extends SimpleApplication implements ActionListener {
         /** Set up Physics */
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        // Toggle to true to see grids
-        bulletAppState.setDebugEnabled(false);
 
         // We re-use the flyby camera for rotation, while positioning is handled by physics
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
@@ -230,32 +229,25 @@ public class EWClient extends SimpleApplication implements ActionListener {
         landscape = new RigidBodyControl(sceneShape, 0);
         scene.addControl(landscape);
 
-        // We set up collision detection for the player by creating
-        // a capsule collision shape and a CharacterControl.
-        // The CharacterControl offers extra settings for
-        // size, stepheight, jumping, falling, and gravity.
-        // We also put the player in its starting position.
-
         ninja = new Node();
         Node model = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
         model.scale(SCALE * 0.5f, SCALE * 0.5f, SCALE * 0.5f);
         model.rotate(0.0f, 0.0f, 0.0f);
-        Vector3f loc = new Vector3f(125, 32, 5);
+        Vector3f loc = new Vector3f(125, 80, 5);
         ninja.attachChild(model);
         ninja.setLocalTranslation(loc);
         model.setLocalTranslation(0, -0.075f, 0);
-        
 
         rootNode.attachChild(ninja);
-        player = new BetterCharacterControl(SCALE * 13.0f, SCALE * 100.0f, SCALE * 80000.0f);
+        player = new BetterCharacterControl(SCALE * 13.0f, SCALE * 100.0f, SCALE * 80.0f);
         ninja.addControl(player);
 
         // We attach the scene and the player to the rootnode and the physics space,
         // to make them appear in the game world.
         rootNode.attachChild(scene);
-        bulletAppState.getPhysicsSpace().add(landscape);
         bulletAppState.getPhysicsSpace().add(player);
-        player.setGravity(new Vector3f(0, -10, 0));
-        player.setJumpForce(new Vector3f(0, 15, 0));
+        bulletAppState.getPhysicsSpace().add(landscape);
+        // Toggle to true to see grids
+        bulletAppState.setDebugEnabled(false);
     }
 }

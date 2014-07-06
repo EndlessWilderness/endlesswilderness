@@ -1,6 +1,7 @@
 package com.jdydev.ew.client;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.system.AppSettings;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.BetterCharacterControl;
@@ -44,7 +45,14 @@ public class EWClient extends SimpleApplication implements ActionListener {
 
     public static void main(String[] args) {
         EWClient app = new EWClient();
+        app.setSettings(setUpAppSettings());
         app.start();
+    }
+
+    public static AppSettings setUpAppSettings(){
+        AppSettings settings = new AppSettings(true);
+        //settings.setRenderer(AppSettings.LWJGL_OPENGL1);
+        return settings;
     }
 
     @Override
@@ -89,15 +97,15 @@ public class EWClient extends SimpleApplication implements ActionListener {
 
         /*
          * 3. We have prepared material and heightmap. Now we create the actual terrain:
-         * 
+         *
          * 3.1) Create a TerrainQuad and name it "my terrain".
-         * 
+         *
          * 3.2) A good value for terrain tiles is 64x64 -- so we supply 64+1=65.
-         * 
+         *
          * 3.3) We prepared a heightmap of size 512x512 -- so we supply 512+1=513.
-         * 
+         *
          * 3.4) As LOD step scale we supply Vector3f(1,1,1).
-         * 
+         *
          * 3.5) We supply the prepared heightmap itself.
          */
         int patchSize = 65;

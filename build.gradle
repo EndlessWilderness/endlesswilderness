@@ -15,6 +15,7 @@ repositories {
 
 ext {
   jme3Version = '3.1.0-SNAPSHOT'
+  slfVer = '1.7.+'
 }
 
 task wrapper(type: Wrapper) { gradleVersion = '1.12' }
@@ -30,4 +31,9 @@ dependencies {
     runtime "com.jdydev.jme3:jme3-desktop:${jme3Version}"
     runtime "com.jdydev.jme3:jme3-plugins:${jme3Version}"
     runtime "com.jdydev.jme3:jme3-testdata:${jme3Version}"
+    compile "org.slf4j:slf4j-api:${slfVer}"
+    compile "org.slf4j:jul-to-slf4j:${slfVer}"
+    compile "org.slf4j:jcl-over-slf4j:${slfVer}"
+    compile "org.slf4j:log4j-over-slf4j:${slfVer}"
+    compile 'ch.qos.logback:logback-classic:1.1.2'
 }

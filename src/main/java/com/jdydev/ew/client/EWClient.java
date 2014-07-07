@@ -1,10 +1,13 @@
 package com.jdydev.ew.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.BetterCharacterControl;
+import com.jme3.bullet.control.MMOCharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.KeyInput;
@@ -27,12 +30,16 @@ import com.jme3.texture.Texture.WrapMode;
 
 public class EWClient extends SimpleApplication implements ActionListener {
 
-    public static final float SCALE = 0.10f;
-    public static final float MOVE_SPEED = 300.0f;
+    private static final Logger log = LoggerFactory.getLogger(EWClient.class);
+
+    public static final float SCALE = 0.01f;
+    public static final float BASE_MOVE_SPEED = 700.0f;
+    public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
+    public static final int DEBUG_COUNT = 10;
     // private Spatial sceneModel;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
-    private BetterCharacterControl player;
+    private MMOCharacterControl player;
     private Node ninja;
     private Vector3f walkDirection = new Vector3f();
     private boolean autoWalk = false;
@@ -40,8 +47,9 @@ public class EWClient extends SimpleApplication implements ActionListener {
 
     // Temporary vectors used on each frame.
     // They here to avoid instantiating new vectors on each frame
-    private Vector3f camDir = new Vector3f();
-    private Vector3f camLeft = new Vector3f();
+    private Vector3f forwardDir = new Vector3f();
+    private Vector3f leftDir = new Vector3f();
+    private float time = 0.0f;
 
     public static void main(String[] args) {
         EWClient app = new EWClient();
@@ -192,28 +200,39 @@ public class EWClient extends SimpleApplication implements ActionListener {
      */
     @Override
     public void simpleUpdate(float tpf) {
-        camDir.set(cam.getDirection()).multLocal(SCALE * MOVE_SPEED);
-        camLeft.set(cam.getLeft()).multLocal(SCALE * MOVE_SPEED * 0.5f);
-        walkDirection.set(0, 0, 0);
-        if (left) {
-            walkDirection.addLocal(camLeft);
-        }
-        if (right) {
-            walkDirection.addLocal(camLeft.negate());
-        }
-        if (up || autoWalk) {
-            walkDirection.addLocal(camDir);
-        }
-        if (down) {
-            walkDirection.addLocal(camDir.negate());
-        }
-        if (!player.isOnGround()) {
-            walkDirection.multLocal(0.75f, 0.0f, 0.75f);
-            walkDirection.addLocal(0.0f, -10.0f, 0.0f);
+        cam.getDirection(forwardDir);
+        cam.getLeft(leftDir);
+        if (player.isOnGround()) {
+            walkDirection.set(0, 0, 0);
+            if (left) {
+                walkDirection.addLocal(leftDir);
+            }
+            if (right) {
+                walkDirection.subtractLocal(leftDir);
+            }
+            if (up || autoWalk) {
+                walkDirection.addLocal(forwardDir);
+            }
+            if (down) {
+                walkDirection.subtractLocal(forwardDir);
+            }
+            walkDirection.multLocal(1.0f, 0.0f, 1.0f);
+            walkDirection.normalizeLocal();
+            walkDirection.multLocal(MOVE_SPEED);
+        } else if (!player.isJumping()) {
+            walkDirection.setY(-10.0f);
         }
         player.setWalkDirection(walkDirection);
-        player.setViewDirection(camDir.negate());
-        cam.setLocation(ninja.getLocalTranslation().addLocal(camDir.negate()));
+        player.setViewDirection(forwardDir.negateLocal().multLocal(MOVE_SPEED));
+        cam.setLocation(ninja.getLocalTranslation().addLocal(forwardDir));
+        int timeOld = (int) (time * DEBUG_COUNT);
+        time += tpf;
+        if (log.isDebugEnabled()) {
+            int timeNew = (int) (time * DEBUG_COUNT);
+            if (timeOld != timeNew) {
+                log.debug("" + timeNew + ": " + player);
+            }
+        }
     }
 
     private void setupBullet(Node scene) {
@@ -247,14 +266,14 @@ public class EWClient extends SimpleApplication implements ActionListener {
         model.setLocalTranslation(0, -0.075f, 0);
 
         rootNode.attachChild(ninja);
-        player = new BetterCharacterControl(SCALE * 13.0f, SCALE * 100.0f, SCALE * 80.0f);
+        player = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
         ninja.addControl(player);
 
         // We attach the scene and the player to the rootnode and the physics space,
         // to make them appear in the game world.
         rootNode.attachChild(scene);
-        bulletAppState.getPhysicsSpace().add(player);
         bulletAppState.getPhysicsSpace().add(landscape);
+        bulletAppState.getPhysicsSpace().add(player);
         // Toggle to true to see grids
         bulletAppState.setDebugEnabled(false);
     }

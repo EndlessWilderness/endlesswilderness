@@ -16,7 +16,6 @@ public class MMOCharacterControl extends BetterCharacterControl {
     private static final Logger log = LoggerFactory.getLogger(MMOCharacterControl.class);
     
     private boolean jumping = false;
-    private boolean jumpAir = false;
 
     public MMOCharacterControl(float radiusIn, float heightIn, float massIn) {
         super(radiusIn, heightIn, massIn);
@@ -29,6 +28,7 @@ public class MMOCharacterControl extends BetterCharacterControl {
     public void jump() {
         if (this.onGround) {
             this.jump = true;
+            log.debug("Attempting to Jump");
         } else {
             log.debug("Jump failed - Not on Ground");
         }
@@ -50,7 +50,10 @@ public class MMOCharacterControl extends BetterCharacterControl {
         vars.release();
         for (PhysicsRayTestResult physicsRayTestResult : results) {
             if (!physicsRayTestResult.getCollisionObject().equals(rigidBody)) {
-                this.jumping = this.jumping && !this.jumpAir;
+                if (!this.onGround) {
+                    log.debug("Landing - " + this.toString());
+                    this.jumping = false;
+                }
                 this.onGround = true;
                 return;
             }
@@ -58,7 +61,6 @@ public class MMOCharacterControl extends BetterCharacterControl {
         if (log.isDebugEnabled() && this.onGround) {
             log.debug("Going airborne - " + this.toString());
         }
-        this.jumpAir = this.jumping;
         this.onGround = false;
     }
     

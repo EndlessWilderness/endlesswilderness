@@ -35,7 +35,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public static final float SCALE = 0.01f;
     public static final float BASE_MOVE_SPEED = 700.0f;
     public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
-    public static final int DEBUG_COUNT = 10;
+    public static final int DEBUG_COUNT = 1;
     // private Spatial sceneModel;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
@@ -52,15 +52,26 @@ public class EWClient extends SimpleApplication implements ActionListener {
     private float time = 0.0f;
 
     public static void main(String[] args) {
-        EWClient app = new EWClient();
-        app.setSettings(setUpAppSettings());
-        app.start();
+        try {
+            new EWClient().start();
+        } catch (Exception e) {
+            log.error("Error while starting application", e);
+            log.info("Loading with retry true");
+            new EWClient(true).start();
+        }
     }
 
-    public static AppSettings setUpAppSettings(){
-        AppSettings settings = new AppSettings(true);
-        //settings.setRenderer(AppSettings.LWJGL_OPENGL1);
-        return settings;
+    public EWClient() {
+        super();
+    }
+
+    public EWClient(boolean retry) {
+        this();
+        if (retry) {
+            AppSettings tempSettings = new AppSettings(true);
+            tempSettings.setRenderer(AppSettings.LWJGL_OPENGL1);
+            this.setSettings(tempSettings);
+        }
     }
 
     @Override
@@ -105,15 +116,15 @@ public class EWClient extends SimpleApplication implements ActionListener {
 
         /*
          * 3. We have prepared material and heightmap. Now we create the actual terrain:
-         *
+         * 
          * 3.1) Create a TerrainQuad and name it "my terrain".
-         *
+         * 
          * 3.2) A good value for terrain tiles is 64x64 -- so we supply 64+1=65.
-         *
+         * 
          * 3.3) We prepared a heightmap of size 512x512 -- so we supply 512+1=513.
-         *
+         * 
          * 3.4) As LOD step scale we supply Vector3f(1,1,1).
-         *
+         * 
          * 3.5) We supply the prepared heightmap itself.
          */
         int patchSize = 65;
@@ -221,6 +232,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
             walkDirection.multLocal(MOVE_SPEED);
         } else if (!player.isJumping()) {
             walkDirection.setY(-10.0f);
+            log.debug("Airborne, and not jumping");
         }
         player.setWalkDirection(walkDirection);
         player.setViewDirection(forwardDir.negateLocal().multLocal(MOVE_SPEED));

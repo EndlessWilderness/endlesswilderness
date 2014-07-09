@@ -116,7 +116,9 @@ public class MMOCharacterControl extends BetterCharacterControl {
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("V: ");
+        sb.append("L: ");
+        sb.append(this.location);
+        sb.append(" V: ");
         sb.append(this.getVelocity());
         if (this.onGround) {
             sb.append(" - Grounded - ");

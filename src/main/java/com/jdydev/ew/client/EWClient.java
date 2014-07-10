@@ -231,7 +231,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
             walkDirection.normalizeLocal();
             walkDirection.multLocal(MOVE_SPEED);
         } else if (!player.isJumping()) {
-            walkDirection.setY(-10.0f);
+            walkDirection.setY(-MOVE_SPEED);
             log.debug("Airborne, and not jumping");
         }
         player.setWalkDirection(walkDirection);
@@ -272,7 +272,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         Node model = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
         model.scale(SCALE * 0.5f, SCALE * 0.5f, SCALE * 0.5f);
         model.rotate(0.0f, 0.0f, 0.0f);
-        Vector3f loc = new Vector3f(125, 80, 5);
+        Vector3f loc = new Vector3f(384.61444f, 55.23122f, -523.6855f);
         ninja.attachChild(model);
         ninja.setLocalTranslation(loc);
         model.setLocalTranslation(0, -0.075f, 0);

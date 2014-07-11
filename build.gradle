@@ -24,6 +24,7 @@ dependencies {
     compile "com.jdydev.jme3:jme3-core:${jme3Version}"
     compile "com.jdydev.jme3:jme3-bullet:${jme3Version}"
     compile "com.jdydev.jme3:jme3-terrain:${jme3Version}"
+    compile "com.jdydev.jme3:jme3-networking:${jme3Version}"
     compile 'org.lwjgl.lwjgl:lwjgl:2.9.1'
     compile 'de.jarnbjo:j-ogg-all:1.0.0'
     runtime "com.jdydev.jme3:jme3-bullet-natives:${jme3Version}"

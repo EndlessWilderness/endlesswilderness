@@ -1,10 +1,11 @@
 package com.jdydev.ew.client;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.system.AppSettings;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.MMOCharacterControl;
@@ -20,7 +21,10 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.network.Client;
+import com.jme3.network.Network;
 import com.jme3.scene.Node;
+import com.jme3.system.AppSettings;
 import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.terrain.heightmap.AbstractHeightMap;
@@ -36,7 +40,8 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public static final float BASE_MOVE_SPEED = 700.0f;
     public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
     public static final int DEBUG_COUNT = 1;
-    // private Spatial sceneModel;
+
+    private Client netClient;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
     private MMOCharacterControl player;
@@ -56,7 +61,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
             new EWClient().start();
         } catch (Exception e) {
             log.error("Error while starting application", e);
-            log.info("Loading with retry true");
+            log.info("Loading with defaults");
             new EWClient(true).start();
         }
     }
@@ -75,7 +80,24 @@ public class EWClient extends SimpleApplication implements ActionListener {
     }
 
     @Override
+    public void destroy() {
+        log.debug("Checking network client");
+        if (netClient != null) {
+            log.debug("Shutting down network client");
+            netClient.close();
+        }
+        super.destroy();
+    }
+
+    @Override
     public void simpleInitApp() {
+        try {
+            netClient = Network.connectToServer("localhost", 6143);
+            netClient.start();
+            log.debug("Connected to Server: " + netClient.getId());
+        } catch (IOException e) {
+            log.error("Error while connecting to network server", e);
+        }
         this.setupBullet(this.createTerrain());
     }
 

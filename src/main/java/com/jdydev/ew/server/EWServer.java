@@ -2,12 +2,19 @@ package com.jdydev.ew.server;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jme3.app.SimpleApplication;
+import com.jme3.network.ConnectionListener;
+import com.jme3.network.HostedConnection;
 import com.jme3.network.Network;
 import com.jme3.network.Server;
 import com.jme3.system.JmeContext;
 
-public class EWServer extends SimpleApplication {
+public class EWServer extends SimpleApplication implements ConnectionListener {
+    
+    private static Logger log = LoggerFactory.getLogger(EWServer.class); 
 
     public static void main(String[] args) {
         EWServer app = new EWServer();
@@ -18,10 +25,21 @@ public class EWServer extends SimpleApplication {
     public void simpleInitApp() {
         try {
             Server myServer = Network.createServer(6143);
+            myServer.addConnectionListener(this);
             myServer.start();
         } catch (IOException e) {
             throw new RuntimeException("Error while starting up server.", e);
         }
+    }
+
+    @Override
+    public void connectionAdded(Server s, HostedConnection conn) {
+        log.debug("Connection Added");
+    }
+
+    @Override
+    public void connectionRemoved(Server s, HostedConnection conn) {
+        log.debug("Connection Removed");
     }
 
 }

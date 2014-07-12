@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jdydev.ew.server.EWServer;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
@@ -92,7 +93,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     @Override
     public void simpleInitApp() {
         try {
-            netClient = Network.connectToServer("localhost", 6143);
+            netClient = Network.connectToServer("ewserver.jdydev.com", EWServer.SERVER_PORT);
             netClient.start();
             log.debug("Connected to Server: " + netClient.getId());
         } catch (IOException e) {

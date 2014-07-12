@@ -38,3 +38,8 @@ dependencies {
     compile "org.slf4j:log4j-over-slf4j:${slfVer}"
     compile 'ch.qos.logback:logback-classic:1.1.2'
 }
+
+task runServer(type: JavaExec) {
+    main = 'com.jdydev.ew.server.EWServer'
+    classpath = sourceSets.main.runtimeClasspath
+}

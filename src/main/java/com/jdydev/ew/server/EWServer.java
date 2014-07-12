@@ -13,8 +13,9 @@ import com.jme3.network.Server;
 import com.jme3.system.JmeContext;
 
 public class EWServer extends SimpleApplication implements ConnectionListener {
-    
-    private static Logger log = LoggerFactory.getLogger(EWServer.class); 
+
+    private static Logger log = LoggerFactory.getLogger(EWServer.class);
+    public static final int SERVER_PORT = 7777;
 
     public static void main(String[] args) {
         EWServer app = new EWServer();
@@ -24,7 +25,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
     @Override
     public void simpleInitApp() {
         try {
-            Server myServer = Network.createServer(6143);
+            Server myServer = Network.createServer(SERVER_PORT);
             myServer.addConnectionListener(this);
             myServer.start();
         } catch (IOException e) {
@@ -34,12 +35,12 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
 
     @Override
     public void connectionAdded(Server s, HostedConnection conn) {
-        log.debug("Connection Added");
+        log.debug("Connection Added from " + conn.getAddress() + " with id " + conn.getId());
     }
 
     @Override
     public void connectionRemoved(Server s, HostedConnection conn) {
-        log.debug("Connection Removed");
+        log.debug("Connection Removed by " + conn.getId());
     }
 
 }

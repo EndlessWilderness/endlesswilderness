@@ -35,12 +35,12 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
 
     @Override
     public void connectionAdded(Server s, HostedConnection conn) {
-        log.debug("Connection Added from " + conn.getAddress() + " with id " + conn.getId());
+        log.debug("Connection Added from {} with id {}", conn.getAddress(), conn.getId());
     }
 
     @Override
     public void connectionRemoved(Server s, HostedConnection conn) {
-        log.debug("Connection Removed by " + conn.getId());
+        log.debug("Connection Removed by {}", conn.getId());
     }
 
 }

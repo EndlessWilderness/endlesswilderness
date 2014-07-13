@@ -51,7 +51,7 @@ public class MMOCharacterControl extends BetterCharacterControl {
         for (PhysicsRayTestResult physicsRayTestResult : results) {
             if (!physicsRayTestResult.getCollisionObject().equals(rigidBody)) {
                 if (!this.onGround) {
-                    log.debug("Landing - " + this.toString());
+                    log.debug("Landing - {}", this.toString());
                     this.jumping = false;
                 }
                 this.onGround = true;
@@ -59,7 +59,7 @@ public class MMOCharacterControl extends BetterCharacterControl {
             }
         }
         if (log.isDebugEnabled() && this.onGround) {
-            log.debug("Going airborne - " + this.toString());
+            log.debug("Going airborne - {}", this.toString());
         }
         this.onGround = false;
     }

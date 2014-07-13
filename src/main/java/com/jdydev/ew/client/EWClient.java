@@ -95,7 +95,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         try {
             netClient = Network.connectToServer("ewserver.jdydev.com", EWServer.SERVER_PORT);
             netClient.start();
-            log.debug("Connected to Server: " + netClient.getId());
+            log.debug("Connected to Server: {}", netClient.getId());
         } catch (IOException e) {
             log.error("Error while connecting to network server", e);
         }
@@ -265,7 +265,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         if (log.isDebugEnabled()) {
             int timeNew = (int) (time * DEBUG_COUNT);
             if (timeOld != timeNew) {
-                log.debug("" + timeNew + ": " + player);
+                log.debug("{}: {}", timeNew, player);
             }
         }
     }

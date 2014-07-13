@@ -18,7 +18,7 @@ ext {
   slfVer = '1.7.+'
 }
 
-task wrapper(type: Wrapper) { gradleVersion = '1.12' }
+task wrapper(type: Wrapper) { gradleVersion = '2.0' }
 
 dependencies {
     compile "com.jdydev.jme3:jme3-core:${jme3Version}"
@@ -37,6 +37,8 @@ dependencies {
     compile "org.slf4j:jcl-over-slf4j:${slfVer}"
     compile "org.slf4j:log4j-over-slf4j:${slfVer}"
     compile 'ch.qos.logback:logback-classic:1.1.2'
+    
+    compile 'org.codehaus.groovy:groovy-all:2.3.3'
 }
 
 task runServer(type: JavaExec) {

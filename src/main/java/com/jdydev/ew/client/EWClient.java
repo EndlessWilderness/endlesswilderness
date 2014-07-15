@@ -36,7 +36,7 @@ import com.jme3.texture.Texture.WrapMode;
 public class EWClient extends SimpleApplication implements ActionListener {
 
     private static final Logger log = LoggerFactory.getLogger(EWClient.class);
-
+    
     public static final float SCALE = 0.01f;
     public static final float BASE_MOVE_SPEED = 700.0f;
     public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
@@ -78,6 +78,11 @@ public class EWClient extends SimpleApplication implements ActionListener {
             tempSettings.setRenderer(AppSettings.LWJGL_OPENGL1);
             this.setSettings(tempSettings);
         }
+    }
+    
+    public boolean authenticate(String username, String password) {
+        log.debug("Username: {} Password: {}", username, password);
+        return true;
     }
 
     @Override

@@ -82,7 +82,13 @@ public class EWClient extends SimpleApplication implements ActionListener {
     
     public boolean authenticate(String username, String password) {
         log.debug("Username: {} Password: {}", username, password);
-        return true;
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            // don't care
+        }
+        log.debug("Done Sleeping");
+        return false;
     }
 
     @Override

@@ -4,7 +4,7 @@ apply plugin: 'application'
 
 version = '0.0.1'
 
-mainClassName = 'com.jdydev.ew.client.EWClient'
+mainClassName = 'com.jdydev.ew.Launcher'
 
 repositories { 
     jcenter() 
@@ -39,6 +39,8 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.1.2'
     
     compile 'org.codehaus.groovy:groovy-all:2.3.3'
+    // hack for JavaFX
+    compile files("${System.properties['java.home']}/lib/ext/jfxrt.jar")
     compile 'org.codehaus.groovyfx:groovyfx:0.4.0'
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
 }

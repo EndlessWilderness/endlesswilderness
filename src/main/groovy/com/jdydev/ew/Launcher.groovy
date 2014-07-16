@@ -1,3 +1,5 @@
+package com.jdydev.ew
+
 import static groovyx.javafx.GroovyFX.start
 
 import com.jdydev.ew.client.EWClient

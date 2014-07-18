@@ -16,6 +16,8 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
 
     private static Logger log = LoggerFactory.getLogger(EWServer.class);
     public static final int SERVER_PORT = 7777;
+    public static final String SERVER_NAME = "Endless Wilderness";
+    public static final int SERVER_VERSION = 1;
 
     public static void main(String[] args) {
         EWServer app = new EWServer();

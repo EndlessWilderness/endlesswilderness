@@ -83,11 +83,20 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public boolean authenticate(String username, String password) {
         log.debug("Username: {} Password: {}", username, password);
         try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            // don't care
+            netClient = Network.connectToServer("ewserver.jdydev.com", EWServer.SERVER_PORT);
+            netClient.start();
+            log.debug("Connected to Server: {}", netClient.getId());
+            while (!netClient.isConnected()) {
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    // It's OK
+                }
+            }
+            return true;
+        } catch (IOException e) {
+            log.error("Error while connecting to network server", e);
         }
-        log.debug("Done Sleeping");
         return false;
     }
 
@@ -103,13 +112,6 @@ public class EWClient extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
-        try {
-            netClient = Network.connectToServer("ewserver.jdydev.com", EWServer.SERVER_PORT);
-            netClient.start();
-            log.debug("Connected to Server: {}", netClient.getId());
-        } catch (IOException e) {
-            log.error("Error while connecting to network server", e);
-        }
         this.setupBullet(this.createTerrain());
     }
 

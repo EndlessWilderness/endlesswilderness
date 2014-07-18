@@ -10,7 +10,7 @@ We are going to be releasing a playable (but ugly and nearly featureless) versio
 
 == Requirements
 
-* Java 1.7
+* Java 1.8 (Java FX is included)
 * JAVA_HOME Environment Variable Set
 * Java on the path
 

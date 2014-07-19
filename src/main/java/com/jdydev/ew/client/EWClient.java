@@ -83,7 +83,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public boolean authenticate(String username, String password) {
         log.debug("Username: {} Password: {}", username, password);
         try {
-            netClient = Network.connectToServer("ewserver.jdydev.com", EWServer.SERVER_PORT);
+            netClient = Network.connectToServer(EWServer.SERVER_NAME, EWServer.SERVER_VERSION, "ewserver.jdydev.com", EWServer.SERVER_PORT);
             netClient.start();
             log.debug("Connected to Server: {}", netClient.getId());
             while (!netClient.isConnected()) {

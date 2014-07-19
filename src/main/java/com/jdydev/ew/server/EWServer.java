@@ -27,7 +27,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
     @Override
     public void simpleInitApp() {
         try {
-            Server myServer = Network.createServer(SERVER_PORT);
+            Server myServer = Network.createServer(SERVER_NAME, SERVER_VERSION, SERVER_PORT, SERVER_PORT);
             myServer.addConnectionListener(this);
             myServer.start();
         } catch (IOException e) {

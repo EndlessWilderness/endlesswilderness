@@ -5,7 +5,7 @@ ew="endlesswilderness"
 dir="$(ls -1d ../$ew-*)"
 lock="lock.pid"
 if [ ! -e "$dir/$lock" ];then
-  rm -r ../$dir
+  rm -r $dir
   git pull
   ./gradlew distZip
   cd ..

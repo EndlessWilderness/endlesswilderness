@@ -10,9 +10,11 @@ We are going to be releasing a playable (but ugly and nearly featureless) versio
 
 == Requirements
 
-* Java 1.8 (Java FX is included)
+* JDK 1.8 
+* Java FX (Only included in Oracle distributions, but should work if you download separately and install in the lib/ext)
 * JAVA_HOME Environment Variable Set
 * Java on the path
+* http://nextdime.wordpress.com/2014/06/06/install-oracle-java-8-in-ubuntu-via-ppa-repository-jdk8/[Instructions for Ubuntu] - How to get an Oracle installer from the package manager
 
 == Building
 

@@ -10,7 +10,7 @@ Endless Wilderness is the code name for an Open Source MMO Client project that w
 * Java FX (Only included in Oracle distributions, but should work if you download separately and install in the lib/ext)
 * JAVA_HOME Environment Variable Set
 * Java on the path
-* http://nextdime.wordpress.com/2014/06/06/install-oracle-java-8-in-ubuntu-via-ppa-repository-jdk8/[Instructions for Ubuntu] - How to get an Oracle installer from the package manager
+* Check the https://github.com/EndlessWilderness/endlesswilderness/wiki/FAQ[FAQ!]
 
 == Building
 

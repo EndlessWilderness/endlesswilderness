@@ -5,6 +5,9 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jdydev.ew.Launcher;
+import com.jdydev.ew.comm.CommUtil;
+import com.jdydev.ew.comm.LoginMessage;
 import com.jdydev.ew.server.EWServer;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
@@ -23,6 +26,8 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.network.Client;
+import com.jme3.network.Message;
+import com.jme3.network.MessageListener;
 import com.jme3.network.Network;
 import com.jme3.scene.Node;
 import com.jme3.system.AppSettings;
@@ -43,6 +48,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public static final int DEBUG_COUNT = 1;
 
     private Client netClient;
+    private Launcher launcher;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
     private MMOCharacterControl player;
@@ -80,25 +86,51 @@ public class EWClient extends SimpleApplication implements ActionListener {
         }
     }
 
-    public boolean authenticate(String username, String password) {
-        log.debug("Username: {} Password: {}", username, password);
+    public boolean authenticate(LoginMessage lm) {
+        log.debug("Authenticate received message: {}", lm);
         try {
+            CommUtil.registerMessages();
             netClient = Network.connectToServer(EWServer.SERVER_NAME, EWServer.SERVER_VERSION,
-                    "ewserver.jdydev.com", EWServer.SERVER_PORT);
+                    EWServer.SERVER_HOST, EWServer.SERVER_PORT);
+            this.setupClient();
             netClient.start();
             log.debug("Connected to Server: {}", netClient.getId());
             while (!netClient.isConnected()) {
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
-                    // It's OK
+                    // Should probably throw something if we got interrupted
                 }
             }
+            netClient.send(lm);
             return true;
         } catch (IOException e) {
             log.error("Error while connecting to network server", e);
         }
         return false;
+    }
+
+    public void setLauncher(Launcher l) {
+        this.launcher = l;
+    }
+
+    private void setupClient() {
+        // Replace this with a Guava Assert?
+        if (this.netClient == null) {
+            throw new RuntimeException("Attempting to setup client when not initialized");
+        }
+        netClient.addMessageListener(new MessageListener<Client>() {
+            @Override
+            public void messageReceived(Client c, Message m) {
+                LoginMessage lm = (LoginMessage) m;
+                log.debug("Message Received: {}", lm);
+                if (lm.isAccepted()) {
+                    launcher.loginSuccess();
+                } else {
+                    launcher.loginFailure();
+                }
+            }
+        }, LoginMessage.class);
     }
 
     @Override

@@ -16,6 +16,7 @@ public class MMOCharacterControl extends BetterCharacterControl {
     private static final Logger log = LoggerFactory.getLogger(MMOCharacterControl.class);
     
     private boolean jumping = false;
+    private boolean initialLocationSet = false;
 
     public MMOCharacterControl(float radiusIn, float heightIn, float massIn) {
         super(radiusIn, heightIn, massIn);
@@ -112,6 +113,17 @@ public class MMOCharacterControl extends BetterCharacterControl {
             jump = false;
         }
         vars.release();
+    }
+
+    public void setInitialLocation(Vector3f loc) {
+        if (!this.initialLocationSet) {
+            this.location.set(loc);
+            this.initialLocationSet = true;
+        }
+    }
+    
+    public Vector3f getLocation() {
+        return this.location;
     }
 
     public String toString() {

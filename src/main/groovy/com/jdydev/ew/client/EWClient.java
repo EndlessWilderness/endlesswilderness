@@ -322,7 +322,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         time += tpf;
         int timeNew = (int) (time * POLL_FREQUENCY);
         if (timeOld != timeNew) {
-            netClient.send(new LocationMessage(ninja.getLocalTranslation()));
+            netClient.send(new LocationMessage(player.getLocation()));
             log.debug("{}: {}", timeNew, player);
         }
     }
@@ -362,6 +362,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         rootNode.attachChild(ninja);
         player = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
         ninja.addControl(player);
+        player.setInitialLocation(serverLoc);
 
         // We attach the scene and the player to the rootnode and the physics space,
         // to make them appear in the game world.

@@ -6,5 +6,6 @@ public class CommUtil {
 
     public static void registerMessages() {
         Serializer.registerClass(LoginMessage.class);
+        Serializer.registerClass(LocationMessage.class);
     }
 }

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.jdydev.ew.Launcher;
 import com.jdydev.ew.comm.CommUtil;
+import com.jdydev.ew.comm.LocationMessage;
 import com.jdydev.ew.comm.LoginMessage;
 import com.jdydev.ew.server.EWServer;
 import com.jme3.app.SimpleApplication;
@@ -45,7 +46,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public static final float SCALE = 0.01f;
     public static final float BASE_MOVE_SPEED = 700.0f;
     public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
-    public static final int DEBUG_COUNT = 1;
+    public static final int POLL_FREQUENCY = 1;
 
     private Client netClient;
     private Launcher launcher;
@@ -306,13 +307,12 @@ public class EWClient extends SimpleApplication implements ActionListener {
         player.setWalkDirection(walkDirection);
         player.setViewDirection(forwardDir.negateLocal().multLocal(MOVE_SPEED));
         cam.setLocation(ninja.getLocalTranslation().addLocal(forwardDir));
-        int timeOld = (int) (time * DEBUG_COUNT);
+        int timeOld = (int) (time * POLL_FREQUENCY);
         time += tpf;
-        if (log.isDebugEnabled()) {
-            int timeNew = (int) (time * DEBUG_COUNT);
-            if (timeOld != timeNew) {
-                log.debug("{}: {}", timeNew, player);
-            }
+        int timeNew = (int) (time * POLL_FREQUENCY);
+        if (timeOld != timeNew) {
+            netClient.send(new LocationMessage(ninja.getLocalTranslation()));
+            log.debug("{}: {}", timeNew, player);
         }
     }
 

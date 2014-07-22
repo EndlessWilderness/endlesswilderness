@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jdydev.ew.comm.CommUtil;
+import com.jdydev.ew.comm.LocationMessage;
 import com.jdydev.ew.comm.LoginMessage;
 import com.jme3.app.SimpleApplication;
 import com.jme3.network.ConnectionListener;
@@ -53,6 +54,14 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                     myServer.broadcast(Filters.equalTo(hc), lm);
                 }
             }, LoginMessage.class);
+            myServer.addMessageListener(new MessageListener<HostedConnection>() {
+                @Override
+                public void messageReceived(HostedConnection hc, Message m) {
+                    LocationMessage lm = (LocationMessage) m;
+                    log.debug("LocationMessage received: {}", lm);
+                }
+
+            }, LocationMessage.class);
             myServer.start();
         } catch (IOException e) {
             throw new RuntimeException("Error while starting up server.", e);

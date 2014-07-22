@@ -55,6 +55,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     private MMOCharacterControl player;
     private Node ninja;
     private Vector3f walkDirection = new Vector3f();
+    private Vector3f serverLoc;
     private boolean autoWalk = false;
     private boolean left = false, right = false, up = false, down = false;
 
@@ -132,6 +133,15 @@ public class EWClient extends SimpleApplication implements ActionListener {
                 }
             }
         }, LoginMessage.class);
+        netClient.addMessageListener(new MessageListener<Client>() {
+            @Override
+            public void messageReceived(Client c, Message m) {
+                LocationMessage lm = (LocationMessage) m;
+                log.debug("Message Received: {}", lm);
+                serverLoc = lm.getCurrentLocation();
+            }
+        }, LocationMessage.class);
+
     }
 
     @Override
@@ -142,6 +152,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
             netClient.close();
         }
         super.destroy();
+        System.exit(0);
     }
 
     @Override
@@ -341,9 +352,11 @@ public class EWClient extends SimpleApplication implements ActionListener {
         Node model = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
         model.scale(SCALE * 0.5f, SCALE * 0.5f, SCALE * 0.5f);
         model.rotate(0.0f, 0.0f, 0.0f);
-        Vector3f loc = new Vector3f(384.61444f, 55.23122f, -523.6855f);
+        if (serverLoc == null) {
+            serverLoc = new Vector3f(384.61444f, 55.23122f, -523.6855f);
+        }
         ninja.attachChild(model);
-        ninja.setLocalTranslation(loc);
+        ninja.setLocalTranslation(serverLoc);
         model.setLocalTranslation(0, -0.075f, 0);
 
         rootNode.attachChild(ninja);

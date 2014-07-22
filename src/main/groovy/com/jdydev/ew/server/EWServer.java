@@ -11,7 +11,9 @@ import com.jdydev.ew.comm.CommUtil;
 import com.jdydev.ew.comm.LocationMessage;
 import com.jdydev.ew.comm.LoginMessage;
 import com.jme3.app.SimpleApplication;
+import com.jme3.math.Vector3f;
 import com.jme3.network.ConnectionListener;
+import com.jme3.network.Filter;
 import com.jme3.network.Filters;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
@@ -31,6 +33,8 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
     public static final int SERVER_VERSION = 1;
 
     private Map<String, String> logins = new HashMap<String, String>();
+    private Map<Integer, String> connLogin = new HashMap<Integer, String>();
+    private Map<String, Vector3f> userLoc = new HashMap<String, Vector3f>();
 
     public static void main(String[] args) {
         EWServer app = new EWServer();
@@ -50,8 +54,16 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                     LoginMessage lm = (LoginMessage) m;
                     log.debug("Message Received: {}", lm);
                     validatePassword(lm);
+                    if (lm.isAccepted()) {
+                        connLogin.put(hc.getId(), lm.getUsername());
+                    }
                     log.debug("Sending Message: {}", lm);
-                    myServer.broadcast(Filters.equalTo(hc), lm);
+                    Filter<HostedConnection> f = Filters.equalTo(hc);
+                    myServer.broadcast(f, lm);
+                    Vector3f loc = userLoc.get(lm.getUsername());
+                    if (loc != null) {
+                        myServer.broadcast(f, new LocationMessage(loc));
+                    }
                 }
             }, LoginMessage.class);
             myServer.addMessageListener(new MessageListener<HostedConnection>() {
@@ -59,6 +71,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                 public void messageReceived(HostedConnection hc, Message m) {
                     LocationMessage lm = (LocationMessage) m;
                     log.debug("LocationMessage received: {}", lm);
+                    userLoc.put(connLogin.get(hc.getId()), lm.getCurrentLocation());
                 }
 
             }, LocationMessage.class);
@@ -90,6 +103,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
     @Override
     public void connectionRemoved(Server s, HostedConnection conn) {
         log.debug("Connection Removed by {}", conn.getId());
+        connLogin.remove(conn.getId());
     }
 
 }

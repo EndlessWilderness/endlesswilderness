@@ -347,21 +347,19 @@ public class EWClient extends SimpleApplication implements ActionListener {
         CollisionShape sceneShape = CollisionShapeFactory.createMeshShape(scene);
         landscape = new RigidBodyControl(sceneShape, 0);
         scene.addControl(landscape);
+        if (serverLoc == null) {
+            serverLoc = new Vector3f(384.61444f, 55.23122f, -523.6855f);
+        }
 
-        ninja = iAmNinja();
+        ninja = iAmNinja(serverLoc);
         rootNode.attachChild(ninja);
         player = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
         ninja.addControl(player);
         player.setInitialLocation(serverLoc);
-        Node n2 = iAmNinja();
-        n2.setLocalTranslation(serverLoc.add(1, 0, 0));
-        rootNode.attachChild(n2);
-        Node n3 = iAmNinja();
-        n3.setLocalTranslation(serverLoc.add(-1, 0, 0));
-        rootNode.attachChild(n3);
-        Node n4 = iAmNinja();
-        n4.setLocalTranslation(serverLoc.add(0, 0, 1));
-        rootNode.attachChild(n4);
+        rootNode.attachChild(iAmNinja(serverLoc.add(1, 0, 0)));
+        rootNode.attachChild(iAmNinja(serverLoc.add(-1, 0, 0)));
+        rootNode.attachChild(iAmNinja(serverLoc.add(0, 0, 1)));
+        rootNode.attachChild(iAmNinja(serverLoc.add(0, 0, -1)));
         // We attach the scene and the player to the rootnode and the physics space,
         // to make them appear in the game world.
         rootNode.attachChild(scene);
@@ -371,16 +369,13 @@ public class EWClient extends SimpleApplication implements ActionListener {
         bulletAppState.setDebugEnabled(false);
     }
 
-    private Node iAmNinja() {
+    private Node iAmNinja(Vector3f loc) {
         Node n = new Node();
         Node model = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
         model.scale(SCALE * 0.5f, SCALE * 0.5f, SCALE * 0.5f);
         model.rotate(0.0f, 0.0f, 0.0f);
-        if (serverLoc == null) {
-            serverLoc = new Vector3f(384.61444f, 55.23122f, -523.6855f);
-        }
         n.attachChild(model);
-        n.setLocalTranslation(serverLoc);
+        n.setLocalTranslation(loc);
         model.setLocalTranslation(0, -0.075f, 0);
         return n;
     }

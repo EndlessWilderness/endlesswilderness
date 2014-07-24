@@ -8,16 +8,18 @@ import com.jme3.network.serializing.Serializable
 class LocationMessage extends AbstractMessage {
 
     Vector3f currentLocation
+    String username;
     
     def LocationMessage() {
         // nuttin
     }
     
-    def LocationMessage(Vector3f locIn) {
+    def LocationMessage(String name, Vector3f locIn) {
+        username = name
         currentLocation = locIn
     }
     
     String toString() {
-        "Current location: $currentLocation"
+        "Username: $username, Current location: $currentLocation"
     }
 }

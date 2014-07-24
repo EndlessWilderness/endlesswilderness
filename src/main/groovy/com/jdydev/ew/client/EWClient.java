@@ -1,6 +1,9 @@
 package com.jdydev.ew.client;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,14 +51,16 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
     public static final int POLL_FREQUENCY = 1;
 
+    private String username;
     private Client netClient;
     private Launcher launcher;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
     private MMOCharacterControl player;
+    private Map<String, Vector3f> locationsByUsername = new HashMap<String, Vector3f>();
+    private Map<String, Node> entitiesByUsername = new HashMap<String, Node>();
     private Node ninja;
     private Vector3f walkDirection = new Vector3f();
-    private Vector3f serverLoc;
     private boolean autoWalk = false;
     private boolean left = false, right = false, up = false, down = false;
 
@@ -91,6 +96,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public boolean authenticate(LoginMessage lm) {
         log.debug("Authenticate received message: {}", lm);
         try {
+            username = lm.getUsername();
             CommUtil.registerMessages();
             netClient = Network.connectToServer(EWServer.SERVER_NAME, EWServer.SERVER_VERSION,
                     EWServer.SERVER_HOST, EWServer.SERVER_PORT);
@@ -138,7 +144,12 @@ public class EWClient extends SimpleApplication implements ActionListener {
             public void messageReceived(Client c, Message m) {
                 LocationMessage lm = (LocationMessage) m;
                 log.debug("Message Received: {}", lm);
-                serverLoc = lm.getCurrentLocation();
+                Node n = entitiesByUsername.get(lm.getUsername());
+                if (n == null) {
+                    locationsByUsername.put(lm.getUsername(), lm.getCurrentLocation());
+                } else {
+                    n.setLocalTranslation(lm.getCurrentLocation());
+                }
             }
         }, LocationMessage.class);
 
@@ -322,7 +333,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         time += tpf;
         int timeNew = (int) (time * POLL_FREQUENCY);
         if (timeOld != timeNew) {
-            netClient.send(new LocationMessage(player.getLocation()));
+            netClient.send(new LocationMessage(username, player.getLocation()));
             log.debug("{}: {}", timeNew, player);
         }
     }
@@ -347,19 +358,19 @@ public class EWClient extends SimpleApplication implements ActionListener {
         CollisionShape sceneShape = CollisionShapeFactory.createMeshShape(scene);
         landscape = new RigidBodyControl(sceneShape, 0);
         scene.addControl(landscape);
-        if (serverLoc == null) {
-            serverLoc = new Vector3f(384.61444f, 55.23122f, -523.6855f);
+        for (Entry<String, Vector3f> e : locationsByUsername.entrySet()) {
+            Node n = iAmNinja(e.getValue());
+            rootNode.attachChild(n);
+            entitiesByUsername.put(e.getKey(), n);
         }
-
-        ninja = iAmNinja(serverLoc);
-        rootNode.attachChild(ninja);
+        ninja = entitiesByUsername.get(username);
+        if (ninja == null) {
+            ninja = iAmNinja(new Vector3f(384.61444f, 55.23122f, -523.6855f));
+            rootNode.attachChild(ninja);
+        }
         player = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
         ninja.addControl(player);
-        player.setInitialLocation(serverLoc);
-        rootNode.attachChild(iAmNinja(serverLoc.add(1, 0, 0)));
-        rootNode.attachChild(iAmNinja(serverLoc.add(-1, 0, 0)));
-        rootNode.attachChild(iAmNinja(serverLoc.add(0, 0, 1)));
-        rootNode.attachChild(iAmNinja(serverLoc.add(0, 0, -1)));
+        player.setInitialLocation(ninja.getLocalTranslation());
         // We attach the scene and the player to the rootnode and the physics space,
         // to make them appear in the game world.
         rootNode.attachChild(scene);

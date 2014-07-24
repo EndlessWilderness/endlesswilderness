@@ -3,6 +3,7 @@ package com.jdydev.ew.server;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
     public static final int SERVER_VERSION = 1;
 
     private Map<String, String> logins = new HashMap<String, String>();
+    // Might not need this, keeping for now
     private Map<Integer, String> connLogin = new HashMap<Integer, String>();
     private Map<String, Vector3f> userLoc = new HashMap<String, Vector3f>();
 
@@ -59,11 +61,10 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                     }
                     log.debug("Sending Message: {}", lm);
                     Filter<HostedConnection> f = Filters.equalTo(hc);
-                    myServer.broadcast(f, lm);
-                    Vector3f loc = userLoc.get(lm.getUsername());
-                    if (loc != null) {
-                        myServer.broadcast(f, new LocationMessage(loc));
+                    for (Entry<String, Vector3f> e : userLoc.entrySet()) {
+                        myServer.broadcast(f, new LocationMessage(e.getKey(), e.getValue()));
                     }
+                    myServer.broadcast(f, lm);
                 }
             }, LoginMessage.class);
             myServer.addMessageListener(new MessageListener<HostedConnection>() {
@@ -71,7 +72,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                 public void messageReceived(HostedConnection hc, Message m) {
                     LocationMessage lm = (LocationMessage) m;
                     log.debug("LocationMessage received: {}", lm);
-                    userLoc.put(connLogin.get(hc.getId()), lm.getCurrentLocation());
+                    userLoc.put(lm.getUsername(), lm.getCurrentLocation());
                 }
 
             }, LocationMessage.class);

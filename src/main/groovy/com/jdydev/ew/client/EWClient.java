@@ -49,8 +49,9 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public static final float SCALE = 0.01f;
     public static final float BASE_MOVE_SPEED = 700.0f;
     public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
-    public static final int POLL_FREQUENCY = 1;
+    public static final int POLL_FREQUENCY = 10;
 
+    private boolean entitiesCreated = false;
     private String username;
     private Client netClient;
     private Launcher launcher;
@@ -144,12 +145,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
             public void messageReceived(Client c, Message m) {
                 LocationMessage lm = (LocationMessage) m;
                 log.debug("Message Received: {}", lm);
-                Node n = entitiesByUsername.get(lm.getUsername());
-                if (n == null) {
-                    locationsByUsername.put(lm.getUsername(), lm.getCurrentLocation());
-                } else {
-                    n.setLocalTranslation(lm.getCurrentLocation());
-                }
+                locationsByUsername.put(lm.getUsername(), lm.getCurrentLocation());
             }
         }, LocationMessage.class);
 
@@ -168,6 +164,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
 
     @Override
     public void simpleInitApp() {
+        this.setPauseOnLostFocus(false);
         this.setupBullet(this.createTerrain());
     }
 
@@ -303,6 +300,16 @@ public class EWClient extends SimpleApplication implements ActionListener {
      */
     @Override
     public void simpleUpdate(float tpf) {
+        for (Entry<String, Vector3f> e : locationsByUsername.entrySet()) {
+            Node n = entitiesByUsername.get(e.getKey());
+            if (n != null && username != null && !username.equals(e.getKey())) {
+                n.setLocalTranslation(e.getValue());
+            } else if (entitiesCreated) {
+                n = iAmNinja(e.getValue());
+                rootNode.attachChild(n);
+                entitiesByUsername.put(e.getKey(), n);
+            }
+        }
         cam.getDirection(forwardDir);
         cam.getLeft(leftDir);
         if (player.isOnGround()) {
@@ -378,6 +385,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         bulletAppState.getPhysicsSpace().add(player);
         // Toggle to true to see grids
         bulletAppState.setDebugEnabled(false);
+        entitiesCreated = true;
     }
 
     private Node iAmNinja(Vector3f loc) {

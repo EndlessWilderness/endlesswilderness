@@ -73,6 +73,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                     LocationMessage lm = (LocationMessage) m;
                     log.debug("LocationMessage received: {}", lm);
                     userLoc.put(lm.getUsername(), lm.getCurrentLocation());
+                    myServer.broadcast(Filters.notEqualTo(hc), lm);
                 }
 
             }, LocationMessage.class);

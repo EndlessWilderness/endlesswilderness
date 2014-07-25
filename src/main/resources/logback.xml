@@ -5,9 +5,9 @@
 			</pattern>
 		</encoder>
 	</appender>
-	<logger name="com.jdydev" level="DEBUG" />
+	<logger name="com.jdydev" level="INFO" />
 	<logger name="com.jme3.bullet.control.MMOCharacterControl"
-		level="DEBUG" />
+		level="INFO" />
 	<root level="WARN">
 		<appender-ref ref="STDOUT" />
 	</root>

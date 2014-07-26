@@ -7,7 +7,7 @@ Endless Wilderness is the code name for an Open Source MMO Client project that w
 == Requirements
 
 * JDK 1.8 
-* Java FX (Only included in Oracle distributions, but should work if you download separately and install in the lib/ext)
+* Java FX 
 * JAVA_HOME Environment Variable Set
 * Java on the path
 * Check the https://github.com/EndlessWilderness/endlesswilderness/wiki/FAQ[FAQ!]

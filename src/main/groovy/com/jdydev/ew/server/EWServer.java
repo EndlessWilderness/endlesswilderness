@@ -12,7 +12,6 @@ import com.jdydev.ew.comm.CommUtil;
 import com.jdydev.ew.comm.LocationMessage;
 import com.jdydev.ew.comm.LoginMessage;
 import com.jme3.app.SimpleApplication;
-import com.jme3.math.Vector3f;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.Filter;
 import com.jme3.network.Filters;
@@ -36,7 +35,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
     private Map<String, String> logins = new HashMap<String, String>();
     // Might not need this, keeping for now
     private Map<Integer, String> connLogin = new HashMap<Integer, String>();
-    private Map<String, Vector3f> userLoc = new HashMap<String, Vector3f>();
+    private Map<String, LocationMessage> userLoc = new HashMap<String, LocationMessage>();
 
     public static void main(String[] args) {
         EWServer app = new EWServer();
@@ -61,8 +60,8 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                     }
                     log.debug("Sending Message: {}", lm);
                     Filter<HostedConnection> f = Filters.equalTo(hc);
-                    for (Entry<String, Vector3f> e : userLoc.entrySet()) {
-                        myServer.broadcast(f, new LocationMessage(e.getKey(), e.getValue()));
+                    for (Entry<String, LocationMessage> e : userLoc.entrySet()) {
+                        myServer.broadcast(f, e.getValue());
                     }
                     myServer.broadcast(f, lm);
                 }
@@ -72,7 +71,7 @@ public class EWServer extends SimpleApplication implements ConnectionListener {
                 public void messageReceived(HostedConnection hc, Message m) {
                     LocationMessage lm = (LocationMessage) m;
                     log.debug("LocationMessage received: {}", lm);
-                    userLoc.put(lm.getUsername(), lm.getCurrentLocation());
+                    userLoc.put(lm.getUsername(), lm);
                     myServer.broadcast(Filters.notEqualTo(hc), lm);
                 }
 

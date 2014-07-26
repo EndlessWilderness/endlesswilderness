@@ -51,14 +51,13 @@ public class EWClient extends SimpleApplication implements ActionListener {
     public static final float MOVE_SPEED = SCALE * BASE_MOVE_SPEED;
     public static final int POLL_FREQUENCY = 10;
 
-    private boolean entitiesCreated = false;
     private String username;
     private Client netClient;
     private Launcher launcher;
     private BulletAppState bulletAppState;
     private RigidBodyControl landscape;
     private MMOCharacterControl player;
-    private Map<String, Vector3f> locationsByUsername = new HashMap<String, Vector3f>();
+    private Map<String, LocationMessage> locationsByUsername = new HashMap<String, LocationMessage>();
     private Map<String, Node> entitiesByUsername = new HashMap<String, Node>();
     private Node ninja;
     private Vector3f walkDirection = new Vector3f();
@@ -145,7 +144,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
             public void messageReceived(Client c, Message m) {
                 LocationMessage lm = (LocationMessage) m;
                 log.debug("Message Received: {}", lm);
-                locationsByUsername.put(lm.getUsername(), lm.getCurrentLocation());
+                locationsByUsername.put(lm.getUsername(), lm);
             }
         }, LocationMessage.class);
 
@@ -300,16 +299,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
      */
     @Override
     public void simpleUpdate(float tpf) {
-        for (Entry<String, Vector3f> e : locationsByUsername.entrySet()) {
-            Node n = entitiesByUsername.get(e.getKey());
-            if (n != null && username != null && !username.equals(e.getKey())) {
-                n.setLocalTranslation(e.getValue());
-            } else if (entitiesCreated) {
-                n = iAmNinja(e.getValue());
-                rootNode.attachChild(n);
-                entitiesByUsername.put(e.getKey(), n);
-            }
-        }
+        updateOtherEntities();
         cam.getDirection(forwardDir);
         cam.getLeft(leftDir);
         if (player.isOnGround()) {
@@ -340,8 +330,35 @@ public class EWClient extends SimpleApplication implements ActionListener {
         time += tpf;
         int timeNew = (int) (time * POLL_FREQUENCY);
         if (timeOld != timeNew) {
-            netClient.send(new LocationMessage(username, player.getLocation()));
+            netClient.send(new LocationMessage(username, player.getLocation(), player
+                    .getViewDirection(), player.getWalkDirection()));
             log.debug("{}: {}", timeNew, player);
+        }
+    }
+
+    private void updateOtherEntities() {
+        for (Entry<String, LocationMessage> e : locationsByUsername.entrySet()) {
+            Node n = entitiesByUsername.get(e.getKey());
+            LocationMessage lm = e.getValue();
+            if (n != null) {
+                if (username != null && !username.equals(e.getKey())) {
+                    MMOCharacterControl m = n.getControl(MMOCharacterControl.class);
+                    if (m != null) {
+                        m.setViewDirection(lm.getViewDirection());
+                        m.setWalkDirection(lm.getWalkDirection());
+                    }
+                }
+            } else {
+                n = iAmNinja(lm);
+                MMOCharacterControl m = n.getControl(MMOCharacterControl.class);
+                rootNode.attachChild(n);
+                bulletAppState.getPhysicsSpace().add(m);
+                entitiesByUsername.put(e.getKey(), n);
+                if (lm.getUsername().equals(username)) {
+                    ninja = n;
+                    player = m;
+                }
+            }
         }
     }
 
@@ -359,43 +376,37 @@ public class EWClient extends SimpleApplication implements ActionListener {
         flyCam.onAction("FLYCAM_InvertY", false, 0.05f);
         setUpKeys();
         setUpLight();
-
+        LocationMessage lm = locationsByUsername.get(username);
+        if (lm == null) {
+            lm = new LocationMessage(username, new Vector3f(384.61444f, 55.23122f, -523.6855f));
+            locationsByUsername.put(username, lm);
+        }
         // We set up collision detection for the scene by creating a
         // compound collision shape and a static RigidBodyControl with mass zero.
         CollisionShape sceneShape = CollisionShapeFactory.createMeshShape(scene);
         landscape = new RigidBodyControl(sceneShape, 0);
         scene.addControl(landscape);
-        for (Entry<String, Vector3f> e : locationsByUsername.entrySet()) {
-            Node n = iAmNinja(e.getValue());
-            rootNode.attachChild(n);
-            entitiesByUsername.put(e.getKey(), n);
-        }
-        ninja = entitiesByUsername.get(username);
-        if (ninja == null) {
-            ninja = iAmNinja(new Vector3f(384.61444f, 55.23122f, -523.6855f));
-            rootNode.attachChild(ninja);
-        }
-        player = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
-        ninja.addControl(player);
-        player.setInitialLocation(ninja.getLocalTranslation());
         // We attach the scene and the player to the rootnode and the physics space,
         // to make them appear in the game world.
         rootNode.attachChild(scene);
         bulletAppState.getPhysicsSpace().add(landscape);
-        bulletAppState.getPhysicsSpace().add(player);
         // Toggle to true to see grids
         bulletAppState.setDebugEnabled(false);
-        entitiesCreated = true;
     }
 
-    private Node iAmNinja(Vector3f loc) {
+    private Node iAmNinja(LocationMessage lm) {
         Node n = new Node();
         Node model = (Node) assetManager.loadModel("Models/Ninja/Ninja.mesh.xml");
         model.scale(SCALE * 0.5f, SCALE * 0.5f, SCALE * 0.5f);
         model.rotate(0.0f, 0.0f, 0.0f);
         n.attachChild(model);
-        n.setLocalTranslation(loc);
+        n.setLocalTranslation(lm.getCurrentLocation());
         model.setLocalTranslation(0, -0.075f, 0);
+        MMOCharacterControl m = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
+        m.setInitialLocation(lm.getCurrentLocation());
+        m.setViewDirection(lm.getViewDirection());
+        m.setWalkDirection(lm.getWalkDirection());
+        n.addControl(m);
         return n;
     }
 }

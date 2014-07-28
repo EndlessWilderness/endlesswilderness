@@ -122,6 +122,10 @@ public class MMOCharacterControl extends BetterCharacterControl {
         }
     }
     
+    public void setServerLocation(Vector3f loc) {
+        this.location.set(loc);
+    }
+    
     public Vector3f getLocation() {
         return this.location;
     }

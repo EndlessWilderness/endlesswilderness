@@ -346,6 +346,8 @@ public class EWClient extends SimpleApplication implements ActionListener {
                     if (m != null) {
                         m.setViewDirection(lm.getViewDirection());
                         m.setWalkDirection(lm.getWalkDirection());
+                        m.setServerLocation(lm.getCurrentLocation());
+                        n.setLocalTranslation(lm.getCurrentLocation());
                     }
                 }
             } else {

@@ -409,10 +409,10 @@ public class EWClient extends SimpleApplication implements ActionListener {
         BitmapText txt = new BitmapText(fnt, false);
         txt.setSize(0.5f);
         txt.setText(lm.getUsername());
-        txt.setQueueBucket(Bucket.Inherit);
+        txt.setQueueBucket(Bucket.Transparent);
         n.setLocalTranslation(lm.getCurrentLocation());
         n.attachChild(txt);
-        txt.setLocalTranslation(-1, 2, -1);
+        txt.setLocalTranslation(0.0f - (fnt.getLineWidth(lm.getUsername()) / 60.0f), 1.5f, 0);
         model.setLocalTranslation(0, -0.075f, 0);
         MMOCharacterControl m = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
         m.setInitialLocation(lm.getCurrentLocation());

@@ -412,7 +412,7 @@ public class EWClient extends SimpleApplication implements ActionListener {
         txt.setQueueBucket(Bucket.Transparent);
         n.setLocalTranslation(lm.getCurrentLocation());
         n.attachChild(txt);
-        txt.setLocalTranslation(0.0f - (fnt.getLineWidth(lm.getUsername()) / 60.0f), 1.5f, 0);
+        txt.setLocalTranslation(-0.01f - (txt.getLineWidth() / 2.0f), 1.5f, 0);
         model.setLocalTranslation(0, -0.075f, 0);
         MMOCharacterControl m = new MMOCharacterControl(SCALE * 10.0f, SCALE * 100.0f, SCALE * 1000.0f);
         m.setInitialLocation(lm.getCurrentLocation());
